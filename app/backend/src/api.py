@@ -5,9 +5,10 @@ import json
 from flask_cors import CORS
 
 from .database.models import db_drop_and_create_all, setup_db, Drink
-from .auth.auth import AuthError, requires_auth, \
+from .auth.auth import requires_auth, \
     get_token_auth_header, verify_decode_jwt, check_permissions
 from .auth.admin_auth import requires_admin_auth
+from .exceptions.error import AuthError
 
 app = Flask(__name__)
 setup_db(app)

@@ -5,23 +5,13 @@ from jose import jwt
 from urllib.request import urlopen
 
 from ..utility.config import get_auth_config
+from ..exceptions.error import AuthError
 
 AUTH_CONFIG = get_auth_config()
 
 AUTH0_DOMAIN = AUTH_CONFIG.get('domain')
 ALGORITHMS = AUTH_CONFIG.get('algorithms')
 API_AUDIENCE = AUTH_CONFIG.get('audience')
-
-## AuthError Exception
-'''
-AuthError Exception
-A standardized way to communicate auth failure modes
-'''
-class AuthError(Exception):
-    def __init__(self, error, status_code):
-        self.error = error
-        self.status_code = status_code
-
 
 ## Auth Header
 

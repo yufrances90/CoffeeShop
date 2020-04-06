@@ -4,9 +4,8 @@ from jose import jwt
 from urllib.request import urlopen
 from functools import wraps
 
-from .auth import AuthError
-
 from ..utility.config import get_user_config
+from ..exceptions.error import AuthError
 
 USER_CONFIG = get_user_config()
 
