@@ -5,7 +5,8 @@ import json
 from flask_cors import CORS
 
 from .database.models import db_drop_and_create_all, setup_db, Drink
-from .auth.auth import AuthError, requires_auth
+from .auth.auth import AuthError, requires_auth, \
+    get_token_auth_header, verify_decode_jwt, check_permissions
 
 app = Flask(__name__)
 setup_db(app)
@@ -19,24 +20,45 @@ CORS(app)
 # db_drop_and_create_all()
 
 ## ROUTES
+
 '''
-@TODO implement endpoint
     GET /drinks
-        it should be a public endpoint
-        it should contain only the drink.short() data representation
-    returns status code 200 and json {"success": True, "drinks": drinks} where drinks is the list of drinks
+        - a public endpoint
+        - contain only the drink.short() data representation
+        - returns status code 200 and json {"success": True, "drinks": drinks} where drinks is the list of drinks
         or appropriate status code indicating reason for failure
 '''
+@app.route("/drinks", methods=["GET"])
+def get_all_drinks():
 
+    drinks = Drink.query.all()
+
+    formatted_drinks = [drink.short() for drink in drinks]
+
+    return jsonify({
+        'success': True,
+        'drinks': formatted_drinks
+    })
 
 '''
-@TODO implement endpoint
     GET /drinks-detail
         it should require the 'get:drinks-detail' permission
         it should contain the drink.long() data representation
     returns status code 200 and json {"success": True, "drinks": drinks} where drinks is the list of drinks
         or appropriate status code indicating reason for failure
 '''
+@app.route('/drinks-detail', methods=["GET"])
+@requires_auth(permission='get:drinks-detail')
+def get_drinks_details(permission):
+   
+    drinks = Drink.query.all()
+
+    formatted_drinks = [drink.long() for drink in drinks]
+
+    return jsonify({
+        'success': True,
+        'drinks': formatted_drinks
+    })
 
 
 '''
