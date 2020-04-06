@@ -59,7 +59,6 @@ def get_token_auth_header():
     return token
 
 '''
-@
     @INPUTS
         permission: string permission (i.e. 'post:drink')
         payload: decoded jwt payload
