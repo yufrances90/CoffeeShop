@@ -6,7 +6,7 @@ from flask_cors import CORS
 
 from .database.models import db_drop_and_create_all, setup_db, Drink
 from .auth.auth import AuthError, requires_auth, \
-    get_token_auth_header, verify_decode_jwt
+    get_token_auth_header, verify_decode_jwt, check_permissions
 
 app = Flask(__name__)
 setup_db(app)
@@ -41,7 +41,6 @@ def get_all_drinks():
     })
 
 '''
-@TODO implement endpoint
     GET /drinks-detail
         it should require the 'get:drinks-detail' permission
         it should contain the drink.long() data representation
@@ -49,14 +48,16 @@ def get_all_drinks():
         or appropriate status code indicating reason for failure
 '''
 @app.route('/drinks-detail', methods=["GET"])
-def get_drinks_details():
+@requires_auth(permission='get:drinks-detail')
+def get_drinks_details(permission):
+   
+    drinks = Drink.query.all()
 
-    token = get_token_auth_header()
-
-    verify_decode_jwt(token)
+    formatted_drinks = [drink.long() for drink in drinks]
 
     return jsonify({
-        'success': True
+        'success': True,
+        'drinks': formatted_drinks
     })
 
 
