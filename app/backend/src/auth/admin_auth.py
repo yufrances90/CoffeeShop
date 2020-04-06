@@ -1,19 +1,17 @@
 import http.client
 import json
-from jose import jwt
-from urllib.request import urlopen
 from functools import wraps
 
 from ..utility.config import get_user_config
+from ..utility.utils import verify_decode_jwt
 from ..exceptions.error import AuthError
 
 USER_CONFIG = get_user_config()
 
-AUTH0_DOMAIN_I = USER_CONFIG.get('domain')
 AUTH0_CLIENT_ID_I = USER_CONFIG.get('client_id')
 AUTH0_CLIENT_SECRET_I = USER_CONFIG.get('client_secret')
 AUTH0_AUDIENCE_I = USER_CONFIG.get('audience')
-ALGORITHMS = USER_CONFIG.get('algorithms')
+AUTH0_DOMAIN_I = USER_CONFIG.get('domain')
 
 def request_admin_access():
 
@@ -41,70 +39,6 @@ def request_admin_access():
 
     return res_json
 
-def verify_decode_jwt(token):
-
-    # GET THE PUBLIC KEY FROM AUTH0
-    jsonurl = urlopen(f'https://{AUTH0_DOMAIN_I}/.well-known/jwks.json')
-    jwks = json.loads(jsonurl.read())
-
-    # GET THE DATA IN THE HEADER
-    unverified_header = jwt.get_unverified_header(token)
-
-    # CHOOSE OUR KEY
-    rsa_key = {}
-    if 'kid' not in unverified_header:
-        raise AuthError({
-            'code': 'invalid_header',
-            'description': 'Authorization malformed.'
-        }, 401)
-
-    for key in jwks['keys']:
-        if key['kid'] == unverified_header['kid']:
-            rsa_key = {
-                'kty': key['kty'],
-                'kid': key['kid'],
-                'use': key['use'],
-                'n': key['n'],
-                'e': key['e']
-            }
-
-    # Finally, verify!!!
-    if rsa_key:
-        try:
-            # USE THE KEY TO VALIDATE THE JWT
-            payload = jwt.decode(
-                token,
-                rsa_key,
-                algorithms=ALGORITHMS,
-                audience=AUTH0_AUDIENCE_I,
-                issuer='https://' + AUTH0_DOMAIN_I + '/'
-            )
-
-            return payload
-        
-        except jwt.ExpiredSignatureError:
-            raise AuthError({
-                'code': 'token_expired',
-                'description': 'Token expired.'
-            }, 401)
-
-        except jwt.JWTClaimsError:
-            raise AuthError({
-                'code': 'invalid_claims',
-                'description': 'Incorrect claims. Please, check the audience and issuer.'
-            }, 401)
-
-        except Exception:
-            raise AuthError({
-                'code': 'invalid_header',
-                'description': 'Unable to parse authentication token.'
-            }, 400)
-
-    raise AuthError({
-                'code': 'invalid_header',
-                'description': 'Unable to find the appropriate key.'
-            }, 400)
-
 def check_permission(permission, permission_arr):
 
     if permission not in permission_arr:
@@ -123,7 +57,7 @@ def requires_admin_auth(permission=''):
 
             access_token = res_json['access_token']
 
-            payload = verify_decode_jwt(access_token)
+            payload = verify_decode_jwt(access_token, USER_CONFIG)
 
             permission_arr = res_json['scope'].split(' ')
 
