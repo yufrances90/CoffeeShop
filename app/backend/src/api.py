@@ -5,7 +5,8 @@ import json
 from flask_cors import CORS
 
 from .database.models import db_drop_and_create_all, setup_db, Drink
-from .auth.auth import AuthError, requires_auth
+from .auth.auth import AuthError, requires_auth, \
+    get_token_auth_header, verify_decode_jwt
 
 app = Flask(__name__)
 setup_db(app)
@@ -19,6 +20,7 @@ CORS(app)
 # db_drop_and_create_all()
 
 ## ROUTES
+
 '''
     GET /drinks
         - a public endpoint
@@ -46,6 +48,16 @@ def get_all_drinks():
     returns status code 200 and json {"success": True, "drinks": drinks} where drinks is the list of drinks
         or appropriate status code indicating reason for failure
 '''
+@app.route('/drinks-detail', methods=["GET"])
+def get_drinks_details():
+
+    token = get_token_auth_header()
+
+    verify_decode_jwt(token)
+
+    return jsonify({
+        'success': True
+    })
 
 
 '''

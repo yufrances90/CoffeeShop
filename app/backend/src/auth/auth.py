@@ -36,7 +36,22 @@ class AuthError(Exception):
     return the token part of the header
 '''
 def get_token_auth_header():
-   raise Exception('Not Implemented')
+
+    request_headers = request.headers
+
+    if request_headers is None:
+        raise AuthError('No header is found', status_code=500)
+
+    authorization = request_headers['Authorization']
+
+    auth_arr = authorization.split(" ")
+
+    if "Bearer" not in auth_arr:
+        raise AuthError('The header is malformed', status_code=500)
+
+    token = auth_arr[1]
+
+    return token
 
 '''
 @TODO implement check_permissions(permission, payload) method
@@ -66,7 +81,9 @@ def check_permissions(permission, payload):
     !!NOTE urlopen has a common certificate error described here: https://stackoverflow.com/questions/50236117/scraping-ssl-certificate-verify-failed-error-for-http-en-wikipedia-org
 '''
 def verify_decode_jwt(token):
-    raise Exception('Not Implemented')
+
+    print(token)
+    # raise Exception('Not Implemented')
 
 '''
 @TODO implement @requires_auth(permission) decorator method
