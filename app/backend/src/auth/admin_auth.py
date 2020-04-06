@@ -1,22 +1,20 @@
 import http.client
 import json
-import os
-from dotenv import load_dotenv
 from jose import jwt
 from urllib.request import urlopen
 from functools import wraps
 
 from .auth import AuthError
 
-APP_ROOT = os.path.join(os.path.dirname(__file__), '..')   # refers to application_top
-dotenv_path = os.path.join(APP_ROOT, '.env')
-load_dotenv(dotenv_path)
+from ..utility.config import get_user_config
 
-AUTH0_DOMAIN_I = os.getenv('AUTH0_DOMAIN_I')
-AUTH0_CLIENT_ID_I = os.getenv('AUTH0_CLIENT_ID_I')
-AUTH0_CLIENT_SECRET_I = os.getenv('AUTH0_CLIENT_SECRET_I')
-AUTH0_AUDIENCE_I = os.getenv('AUTH0_AUDIENCE_I')
-ALGORITHMS = ['RS256']
+USER_CONFIG = get_user_config()
+
+AUTH0_DOMAIN_I = USER_CONFIG.get('domain')
+AUTH0_CLIENT_ID_I = USER_CONFIG.get('client_id')
+AUTH0_CLIENT_SECRET_I = USER_CONFIG.get('client_secret')
+AUTH0_AUDIENCE_I = USER_CONFIG.get('audience')
+ALGORITHMS = USER_CONFIG.get('algorithms')
 
 def request_admin_access():
 

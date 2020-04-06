@@ -3,16 +3,14 @@ from flask import request, _request_ctx_stack
 from functools import wraps
 from jose import jwt
 from urllib.request import urlopen
-import os
-from dotenv import load_dotenv
 
-APP_ROOT = os.path.join(os.path.dirname(__file__), '..')   # refers to application_top
-dotenv_path = os.path.join(APP_ROOT, '.env')
-load_dotenv(dotenv_path)
+from ..utility.config import get_auth_config
 
-AUTH0_DOMAIN = os.getenv('AUTH0_DOMAIN')
-ALGORITHMS = ['RS256']
-API_AUDIENCE = os.getenv('API_AUDIENCE')
+AUTH_CONFIG = get_auth_config()
+
+AUTH0_DOMAIN = AUTH_CONFIG.get('domain')
+ALGORITHMS = AUTH_CONFIG.get('algorithms')
+API_AUDIENCE = AUTH_CONFIG.get('audience')
 
 ## AuthError Exception
 '''
