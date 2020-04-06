@@ -17,7 +17,7 @@ CORS(app)
 !! NOTE THIS WILL DROP ALL RECORDS AND START YOUR DB FROM SCRATCH
 !! NOTE THIS MUST BE UNCOMMENTED ON FIRST RUN
 '''
-# db_drop_and_create_all()
+db_drop_and_create_all()
 
 ## ROUTES
 
@@ -65,7 +65,6 @@ def get_drinks_details(permission):
 
 
 '''
-@TODO implement endpoint
     POST /drinks
         it should create a new row in the drinks table
         it should require the 'post:drinks' permission
@@ -73,8 +72,39 @@ def get_drinks_details(permission):
     returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing only the newly created drink
         or appropriate status code indicating reason for failure
 '''
+@app.route('/drinks', methods=['POST'])
+@requires_auth(permission='post:drinks')
+def create_new_drink(permission):
 
+    request_data = json.loads(request.data)
 
+    if request_data is None:
+        abort(400)
+
+    req_title = request_data['title']
+    req_recipe = request_data['recipe']
+
+    if req_title is None or req_recipe is None or len(req_recipe) == 0:
+        abort(400)
+
+    drink = Drink(title=req_title, recipe=json.dumps(req_recipe))
+
+    try:
+        
+        drink.insert()
+
+        return jsonify({
+            'success': True,
+            'drinks': [drink.long()]
+        })
+
+    except Exception as e:
+
+        print(e)
+
+        abort(422)
+    
+    
 '''
 @TODO implement endpoint
     PATCH /drinks/<id>
@@ -122,6 +152,17 @@ def unprocessable(error):
         "error": 404,
         "message": "resource not found"
         }), 404
+
+'''
+error handler for 400
+'''
+@app.errorhandler(400)
+def unprocessable(error):
+    return jsonify({
+        "success": False, 
+        "error": 400,
+        "message": "bad request"
+        }), 400
 
 '''
 error handler for AuthError
