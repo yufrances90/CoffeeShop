@@ -7,6 +7,7 @@ from flask_cors import CORS
 from .database.models import db_drop_and_create_all, setup_db, Drink
 from .auth.auth import AuthError, requires_auth, \
     get_token_auth_header, verify_decode_jwt, check_permissions
+from .auth.admin_auth import requires_admin_auth
 
 app = Flask(__name__)
 setup_db(app)
@@ -190,6 +191,19 @@ def delete_drink(permission, drink_id):
         print(e)
 
         abort(422)
+
+    
+'''
+
+Admin Routes
+'''
+
+@app.route('/admin/users', methods=['GET'])
+@requires_admin_auth(permission='read:users')
+def index(permission):
+
+    return 'hello'
+
 
 
 ## Error Handling

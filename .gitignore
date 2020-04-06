@@ -2,3 +2,4 @@
 app/frontend/src/environments/env.json
 app/backend/env/*
 *.pyc
+app/backend/src/env/*
