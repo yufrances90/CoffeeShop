@@ -27,6 +27,20 @@ def request_get_all_users(access_token):
 
     return usr_list
 
+def request_get_all_roles(access_token):
+
+    conn = http.client.HTTPSConnection(AUTH0_DOMAIN_I)
+
+    payload = get_payload({})
+
+    headers = get_headers(access_token)
+
+    conn.request("GET", "/api/v2/roles", payload, headers)
+
+    role_list = get_response_json(conn)
+
+    return role_list
+
 def get_response_json(conn):
 
     res = conn.getresponse()

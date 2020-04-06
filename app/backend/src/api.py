@@ -11,7 +11,9 @@ from .admin.auth import \
     requires_admin_auth, \
     get_access_token_and_perm_arr
 from .exceptions.error import AuthError
-from .admin.api import request_get_all_users
+from .admin.api import \
+    request_get_all_users, \
+    request_get_all_roles
 
 app = Flask(__name__)
 setup_db(app)
@@ -196,15 +198,15 @@ def delete_drink(permission, drink_id):
 
         abort(422)
 
+
     
 '''
-
 Admin Routes
 '''
 
 @app.route('/admin/users', methods=['GET'])
 @requires_admin_auth(permission='read:users')
-def index(permission):
+def get_users(permission):
 
     res = get_access_token_and_perm_arr()
 
@@ -215,6 +217,21 @@ def index(permission):
     return jsonify({
         'success': True,
         'users': user_list
+    })
+
+@app.route('/admin/roles', methods=['GET'])
+@requires_admin_auth(permission='read:roles')
+def get_roles(permission):
+
+    res = get_access_token_and_perm_arr()
+
+    access_token = res['access_token']
+
+    role_list = request_get_all_roles(access_token)
+
+    return jsonify({
+        'success': True,
+        'users': role_list
     })
 
 
