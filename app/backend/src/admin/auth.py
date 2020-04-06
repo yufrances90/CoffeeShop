@@ -1,5 +1,6 @@
 import http.client
 import json
+
 from functools import wraps
 
 from ..utility.config import get_user_config
@@ -49,17 +50,25 @@ def check_permission(permission, permission_arr):
 
     return True
 
+def get_access_token_and_perm_arr():
+
+    res_json = request_admin_access()
+
+    return {
+        'access_token': res_json['access_token'],
+        'permission_arr': res_json['scope'].split(' ')
+    }
+
 def requires_admin_auth(permission=''):
     def requires_admin_auth_decorator(f):
         @wraps(f)
         def wrapper(*args, **kwargs):
-            res_json = request_admin_access()
 
-            access_token = res_json['access_token']
+            res = get_access_token_and_perm_arr()
 
-            payload = verify_decode_jwt(access_token, USER_CONFIG)
+            payload = verify_decode_jwt(res['access_token'], USER_CONFIG)
 
-            permission_arr = res_json['scope'].split(' ')
+            permission_arr = res['permission_arr']
 
             check_permission(permission, permission_arr)
 
