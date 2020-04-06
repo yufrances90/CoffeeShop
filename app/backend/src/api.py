@@ -206,6 +206,7 @@ Admin Routes
 
 @app.route('/admin/users', methods=['GET'])
 @requires_admin_auth(permission='read:users')
+@requires_admin_auth(permission='read:user_idp_tokens')
 def get_users(permission):
 
     res = get_access_token_and_perm_arr()
