@@ -7,8 +7,11 @@ from flask_cors import CORS
 from .database.models import db_drop_and_create_all, setup_db, Drink
 from .auth.auth import requires_auth, \
     get_token_auth_header, verify_decode_jwt, check_permissions
-from .admin.auth import requires_admin_auth
+from .admin.auth import \
+    requires_admin_auth, \
+    get_access_token_and_perm_arr
 from .exceptions.error import AuthError
+from .admin.api import request_get_all_users
 
 app = Flask(__name__)
 setup_db(app)
@@ -203,7 +206,16 @@ Admin Routes
 @requires_admin_auth(permission='read:users')
 def index(permission):
 
-    return 'hello'
+    res = get_access_token_and_perm_arr()
+
+    access_token = res['access_token']
+
+    user_list = request_get_all_users(access_token)
+
+    return jsonify({
+        'success': True,
+        'users': user_list
+    })
 
 
 
