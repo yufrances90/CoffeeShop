@@ -45,10 +45,10 @@ def get_all_drinks():
 
 '''
     GET /drinks-detail
-        it should require the 'get:drinks-detail' permission
-        it should contain the drink.long() data representation
-    returns status code 200 and json {"success": True, "drinks": drinks} where drinks is the list of drinks
-        or appropriate status code indicating reason for failure ====================== TODO =====================
+        - require the 'get:drinks-detail' permission
+        - contain the drink.long() data representation
+        - returns status code 200 and json {"success": True, "drinks": drinks} where drinks is the list of drinks
+        or appropriate status code indicating reason for failure
 '''
 @app.route('/drinks-detail', methods=["GET"])
 @requires_auth(permission='get:drinks-detail')
@@ -66,11 +66,11 @@ def get_drinks_details(permission):
 
 '''
     POST /drinks
-        it should create a new row in the drinks table
-        it should require the 'post:drinks' permission
-        it should contain the drink.long() data representation
-    returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing only the newly created drink
-        or appropriate status code indicating reason for failure
+        - require the 'post:drinks' permission
+        - contain the drink.long() data representation
+        - returns status code 200 and json {"success": True, "drinks": drink} where drink an 
+        array containing only the newly created drink or appropriate status code 
+        indicating reason for failure
 '''
 @app.route('/drinks', methods=['POST'])
 @requires_auth(permission='post:drinks')
@@ -106,18 +106,56 @@ def create_new_drink(permission):
     
     
 '''
-@TODO implement endpoint
     PATCH /drinks/<id>
         where <id> is the existing model id
-        it should respond with a 404 error if <id> is not found
-        it should update the corresponding row for <id>
-        it should require the 'patch:drinks' permission
-        it should contain the drink.long() data representation
-    returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing only the updated drink
-        or appropriate status code indicating reason for failure
+        - respond with a 404 error if <id> is not found
+        - update the corresponding row for <id>
+        - require the 'patch:drinks' permission
+        - contain the drink.long() data representation
+        - returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing 
+        only the updated drink or appropriate status code indicating reason for failure
 '''
+@app.route('/drinks/<int:drink_id>', methods=['PATCH'])
+@requires_auth(permission='patch:drinks')
+def update_drink_details(permission, drink_id):
 
+    if drink_id is None:
+        abort(400)
 
+    drink = Drink.query.filter(Drink.id == drink_id).one_or_none()
+
+    if drink is None:
+        abort(404)
+
+    request_data = json.loads(request.data)
+
+    if request_data is None:
+        abort(400)
+
+    req_title = request_data['title']
+    req_recipe = request_data['recipe']
+
+    if req_title is None or req_recipe is None or len(req_recipe) == 0:
+        abort(400)
+
+    try:
+        
+        drink.title = req_title
+        drink.recipe = json.dumps(req_recipe)
+
+        drink.update()
+
+        return jsonify({
+            'success': True,
+            'drinks': [drink.long()]
+        })
+    except Exception as e:
+
+        print(e)
+
+        abort(422)
+
+   
 '''
 @TODO implement endpoint
     DELETE /drinks/<id>
