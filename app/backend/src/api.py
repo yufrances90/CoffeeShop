@@ -17,7 +17,7 @@ CORS(app)
 !! NOTE THIS WILL DROP ALL RECORDS AND START YOUR DB FROM SCRATCH
 !! NOTE THIS MUST BE UNCOMMENTED ON FIRST RUN
 '''
-db_drop_and_create_all()
+# db_drop_and_create_all()
 
 ## ROUTES
 
@@ -120,7 +120,7 @@ def create_new_drink(permission):
 def update_drink_details(permission, drink_id):
 
     if drink_id is None:
-        abort(400)
+        abort(404)
 
     drink = Drink.query.filter(Drink.id == drink_id).one_or_none()
 
@@ -157,15 +157,39 @@ def update_drink_details(permission, drink_id):
 
    
 '''
-@TODO implement endpoint
     DELETE /drinks/<id>
         where <id> is the existing model id
-        it should respond with a 404 error if <id> is not found
-        it should delete the corresponding row for <id>
-        it should require the 'delete:drinks' permission
-    returns status code 200 and json {"success": True, "delete": id} where id is the id of the deleted record
-        or appropriate status code indicating reason for failure
+        - respond with a 404 error if <id> is not found
+        - delete the corresponding row for <id>
+        - require the 'delete:drinks' permission
+        - returns status code 200 and json {"success": True, "deleted": id} where id is the id of 
+        the deleted record or appropriate status code indicating reason for failure
 '''
+@app.route('/drinks/<int:drink_id>', methods=['DELETE'])
+@requires_auth(permission='delete:drinks')
+def delete_drink(permission, drink_id):
+
+    if drink_id is None:
+        abort(404)
+
+    drink = Drink.query.filter(Drink.id == drink_id).one_or_none()
+
+    if drink is None:
+        abort(404)
+
+    try:
+        
+        drink.delete()
+
+        return jsonify({
+            'success': True,
+            'deleted': drink_id
+        })
+    except Exception as e:
+
+        print(e)
+
+        abort(422)
 
 
 ## Error Handling
