@@ -26,14 +26,15 @@ uncomment the following line to initialize the datbase
 '''
 db_drop_and_create_all()
 
-## ROUTES
+# ROUTES
 
 '''
     GET /drinks
         - a public endpoint
-        - contain only the drink.short() data representation
-        - returns status code 200 and json {"success": True, "drinks": drinks} where drinks is the list of drinks
-        or appropriate status code indicating reason for failure
+        - contain only the drink.short() data representatio
+        - returns status code 200 and json {"success": True, "drinks": drinks
+        } where drinks is the list of drinks or appropriate status code
+        indicating reason for failure
 '''
 @app.route("/drinks", methods=["GET"])
 def get_all_drinks():
@@ -50,17 +51,18 @@ def get_all_drinks():
         'drinks': formatted_drinks
     })
 
+
 '''
     GET /drinks-detail
         - require the 'get:drinks-detail' permission
         - contain the drink.long() data representation
-        - returns status code 200 and json {"success": True, "drinks": drinks} where drinks is the list of drinks
-        or appropriate status code indicating reason for failure
+        - returns status code 200 and json {"success": True, "drinks":
+        drinks} where drinks is the list of drinks or appropriate
+        status code indicating reason for failure
 '''
 @app.route('/drinks-detail', methods=["GET"])
 @requires_auth(permission='get:drinks-detail')
 def get_drinks_details(permission):
-   
     drinks = Drink.query.all()
 
     formatted_drinks = [drink.long() for drink in drinks]
@@ -75,9 +77,9 @@ def get_drinks_details(permission):
     POST /drinks
         - require the 'post:drinks' permission
         - contain the drink.long() data representation
-        - returns status code 200 and json {"success": True, "drinks": drink} where drink an 
-        array containing only the newly created drink or appropriate status code 
-        indicating reason for failure
+        - returns status code 200 and json {"success": True, "drinks":
+        drink} where drink an array containing only the newly created drink
+        or appropriate status code indicating reason for failure
 '''
 @app.route('/drinks', methods=['POST'])
 @requires_auth(permission='post:drinks')
@@ -97,7 +99,6 @@ def create_new_drink(permission):
     drink = Drink(title=req_title, recipe=json.dumps(req_recipe))
 
     try:
-        
         drink.insert()
 
         return jsonify({
@@ -110,8 +111,8 @@ def create_new_drink(permission):
         print(e)
 
         abort(422)
-    
-    
+
+
 '''
     PATCH /drinks/<id>
         where <id> is the existing model id
@@ -119,8 +120,10 @@ def create_new_drink(permission):
         - update the corresponding row for <id>
         - require the 'patch:drinks' permission
         - contain the drink.long() data representation
-        - returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing 
-        only the updated drink or appropriate status code indicating reason for failure
+        - returns status code 200 and json {"success": True,
+        "drinks": drink} where drink an array containing only
+        the updated drink or appropriate status code indicating reason
+        for failure
 '''
 @app.route('/drinks/<int:drink_id>', methods=['PATCH'])
 @requires_auth(permission='patch:drinks')
@@ -146,7 +149,6 @@ def update_drink_details(permission, drink_id):
         abort(400)
 
     try:
-        
         drink.title = req_title
         drink.recipe = json.dumps(req_recipe)
 
@@ -162,15 +164,15 @@ def update_drink_details(permission, drink_id):
 
         abort(422)
 
-   
-'''
-    DELETE /drinks/<id>
+
+''' DELETE /drinks/<id>
         where <id> is the existing model id
         - respond with a 404 error if <id> is not found
         - delete the corresponding row for <id>
         - require the 'delete:drinks' permission
-        - returns status code 200 and json {"success": True, "deleted": id} where id is the id of 
-        the deleted record or appropriate status code indicating reason for failure
+        - returns status code 200 and json {"success": True, "deleted": id}
+        where id is the id of the deleted record or appropriate status code
+        indicating reason for failure
 '''
 @app.route('/drinks/<int:drink_id>', methods=['DELETE'])
 @requires_auth(permission='delete:drinks')
@@ -185,7 +187,6 @@ def delete_drink(permission, drink_id):
         abort(404)
 
     try:
-        
         drink.delete()
 
         return jsonify({
@@ -199,10 +200,10 @@ def delete_drink(permission, drink_id):
         abort(422)
 
 
-    
 '''
 Admin Routes
 '''
+
 
 @app.route('/admin/users', methods=['GET'])
 @requires_admin_auth(permission='read:users')
@@ -220,6 +221,7 @@ def get_users(permission):
         'users': user_list
     })
 
+
 @app.route('/admin/roles', methods=['GET'])
 @requires_admin_auth(permission='read:roles')
 def get_roles(permission):
@@ -236,18 +238,18 @@ def get_roles(permission):
     })
 
 
-
-## Error Handling
+# Error Handling
 '''
 error handling for unprocessable entity
 '''
 @app.errorhandler(422)
 def unprocessable(error):
     return jsonify({
-        "success": False, 
+        "success": False,
         "error": 422,
         "message": "unprocessable"
         }), 422
+
 
 '''
 error handler for 404
@@ -255,10 +257,11 @@ error handler for 404
 @app.errorhandler(404)
 def unprocessable(error):
     return jsonify({
-        "success": False, 
+        "success": False,
         "error": 404,
         "message": "resource not found"
         }), 404
+
 
 '''
 error handler for 400
@@ -266,10 +269,11 @@ error handler for 400
 @app.errorhandler(400)
 def unprocessable(error):
     return jsonify({
-        "success": False, 
+        "success": False,
         "error": 400,
         "message": "bad request"
         }), 400
+
 
 '''
 error handler for AuthError
@@ -277,7 +281,7 @@ error handler for AuthError
 @app.errorhandler(AuthError)
 def auth_error(error):
     return jsonify({
-        "success": False, 
+        "success": False,
         "error": error.status_code,
         "message": error.error
-        }), error.status_code
+    }), error.status_code
