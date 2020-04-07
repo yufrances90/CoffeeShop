@@ -255,7 +255,7 @@ def unprocessable(error):
 error handler for 404
 '''
 @app.errorhandler(404)
-def unprocessable(error):
+def not_found(error):
     return jsonify({
         "success": False,
         "error": 404,
@@ -267,7 +267,7 @@ def unprocessable(error):
 error handler for 400
 '''
 @app.errorhandler(400)
-def unprocessable(error):
+def bad_request(error):
     return jsonify({
         "success": False,
         "error": 400,
