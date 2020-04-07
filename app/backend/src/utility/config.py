@@ -1,7 +1,8 @@
 import os
 from dotenv import load_dotenv
 
-APP_ROOT = os.path.join(os.path.dirname(__file__), '..')   # refers to application_top
+APP_ROOT = os.path.join(os.path.dirname(__file__), '..')
+# refers to application_top
 dotenv_path = os.path.join(APP_ROOT, '.env')
 load_dotenv(dotenv_path)
 
@@ -24,6 +25,7 @@ def get_auth_config():
         'audience': API_AUDIENCE,
         'algorithms': ALGORITHMS
     }
+
 
 def get_user_config():
     return {

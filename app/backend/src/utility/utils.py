@@ -17,8 +17,12 @@ from ..exceptions.error import AuthError
     it should validate the claims
     return the decoded payload
 
-    !!NOTE urlopen has a common certificate error described here: https://stackoverflow.com/questions/50236117/scraping-ssl-certificate-verify-failed-error-for-http-en-wikipedia-org
+    !!NOTE urlopen has a common certificate error described here:
+    https://stackoverflow.com/questions/50236117/scraping-ssl-certificate-
+    verify-failed-error-for-http-en-wikipedia-org
 '''
+
+
 def verify_decode_jwt(token, config):
 
     # GET THE PUBLIC KEY FROM AUTH0
@@ -26,8 +30,8 @@ def verify_decode_jwt(token, config):
     jwks = json.loads(jsonurl.read())
 
     # GET THE DATA IN THE HEADER
-    unverified_header = jwt.get_unverified_header(token) 
-    
+    unverified_header = jwt.get_unverified_header(token)
+
     # CHOOSE OUR KEY
     rsa_key = {}
     if 'kid' not in unverified_header:
@@ -59,7 +63,7 @@ def verify_decode_jwt(token, config):
             )
 
             return payload
-        
+
         except jwt.ExpiredSignatureError:
             raise AuthError({
                 'code': 'token_expired',
@@ -69,7 +73,8 @@ def verify_decode_jwt(token, config):
         except jwt.JWTClaimsError:
             raise AuthError({
                 'code': 'invalid_claims',
-                'description': 'Incorrect claims. Please, check the audience and issuer.'
+                'description':
+                'Incorrect claims. Please, check the audience and issuer.'
             }, 401)
 
         except Exception:
@@ -81,4 +86,4 @@ def verify_decode_jwt(token, config):
     raise AuthError({
                 'code': 'invalid_header',
                 'description': 'Unable to find the appropriate key.'
-            }, 400) 
+            }, 400)

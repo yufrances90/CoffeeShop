@@ -14,6 +14,7 @@ AUTH0_CLIENT_SECRET_I = USER_CONFIG.get('client_secret')
 AUTH0_AUDIENCE_I = USER_CONFIG.get('audience')
 AUTH0_DOMAIN_I = USER_CONFIG.get('domain')
 
+
 def request_admin_access():
 
     conn = http.client.HTTPSConnection(AUTH0_DOMAIN_I)
@@ -27,8 +28,8 @@ def request_admin_access():
 
     payload = json.dumps(request_object)
 
-    headers = { 
-        'content-type': "application/json" 
+    headers = {
+        'content-type': "application/json"
     }
 
     conn.request("POST", "/oauth/token", payload, headers)
@@ -40,6 +41,7 @@ def request_admin_access():
 
     return res_json
 
+
 def check_permission(permission, permission_arr):
 
     if permission not in permission_arr:
@@ -50,6 +52,7 @@ def check_permission(permission, permission_arr):
 
     return True
 
+
 def get_access_token_and_perm_arr():
 
     res_json = request_admin_access()
@@ -58,6 +61,7 @@ def get_access_token_and_perm_arr():
         'access_token': res_json['access_token'],
         'permission_arr': res_json['scope'].split(' ')
     }
+
 
 def requires_admin_auth(permission=''):
     def requires_admin_auth_decorator(f):
