@@ -13,6 +13,7 @@ AUTH0_CLIENT_SECRET_I = USER_CONFIG.get('client_secret')
 AUTH0_AUDIENCE_I = USER_CONFIG.get('audience')
 AUTH0_DOMAIN_I = USER_CONFIG.get('domain')
 
+
 def request_get_all_users(access_token):
 
     conn = http.client.HTTPSConnection(AUTH0_DOMAIN_I)
@@ -26,6 +27,7 @@ def request_get_all_users(access_token):
     usr_list = get_response_json(conn)
 
     return usr_list
+
 
 def request_get_all_roles(access_token):
 
@@ -41,6 +43,7 @@ def request_get_all_roles(access_token):
 
     return role_list
 
+
 def get_response_json(conn):
 
     res = conn.getresponse()
@@ -48,13 +51,15 @@ def get_response_json(conn):
 
     return json.loads(data.decode("utf-8"))
 
+
 def get_payload(obj):
     return json.dumps(obj)
+
 
 def get_headers(access_token):
 
     formatted_token = 'Bearer {}'.format(access_token)
 
-    return { 
+    return {
         'Authorization': formatted_token
     }
